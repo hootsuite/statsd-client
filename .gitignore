@@ -1,0 +1,6 @@
+.ensime
+.ensime_lucene
+project/target
+project/project
+target
+*~
