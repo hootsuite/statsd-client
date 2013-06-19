@@ -25,4 +25,5 @@ class StatsdHandler(config: Config) {
   def inc(k: String, v: Int = 1): Unit = client.increment(s"${prefix}k", v)
   def dec(k: String, v: Int = 1): Unit = client.decrement(s"${prefix}k", v)
   def gauge(k: String, v: Int): Unit = client.gauge(s"${prefix}k", v)
+  def timer(k: String, v: Int): Unit = client.timing(s"${prefix}k", v)
 }
