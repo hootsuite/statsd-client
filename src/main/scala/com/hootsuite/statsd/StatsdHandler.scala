@@ -17,11 +17,9 @@ class StatsdHandler(config: Config) {
   private val client = new etsy.StatsdClient(host, port, null)
 
   private val prefix = {
-    val fromConfig = config.getString("statsd.prefix")
-    if (!fromConfig.endsWith("."))
-      fromConfig + "."
-    else
-      fromConfig
+    val hpfx = config.getString("statsd.hostpfx")
+    val pfx = config.getString("statsd.prefix")
+    s"$pfx.$hpfx.".replaceAll("\\.{1,}", ".")
   }
 
   def inc(k: String, v: Int = 1): Unit = client.increment(s"${prefix}${k}", v)
