@@ -6,7 +6,7 @@ import etsy.StatsdClient
 
 /**
  * Basic handler that will send all messages to statsd.
- * 
+ *
  * @param statsdHost the statsd hostname
  * @param statsdPort the UDP port to connect to on statsdHost
  * @param prefix the base prefix string for all statsd events.
@@ -17,7 +17,7 @@ class StatsdHandler(config: Config) {
   private val client = new etsy.StatsdClient(host, port, null)
 
   private val prefix = {
-    val hpfx = config.getString("statsd.hostpfx")
+    val hpfx = config.getString("statsd.hostpfx").takeWhile(_ != '.').mkString
     val pfx = config.getString("statsd.prefix")
     s"$pfx.$hpfx.".replaceAll("\\.{1,}", ".")
   }
