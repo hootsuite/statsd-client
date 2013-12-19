@@ -4,7 +4,7 @@ version := "1.1"
 
 organization := "com.hootsuite"
 
-scalaVersion := "2.10.0"
+scalaVersion := "2.10.3"
 
 publishTo := Some(Resolver.file("HootSuite repo", file("/var/www/maven-development")))
 
