@@ -7,3 +7,5 @@ target
 .cache
 .classpath
 .project
+ScalaStatsd.iml
+project/ScalaStatsd-build.iml
