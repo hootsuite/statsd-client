@@ -8,7 +8,8 @@ trait StatsdReporting {
 
   protected val statsdClient: Option[StatsdHandler]
 
-  private def now: Long = System nanoTime
+  // Prefer System.nanoTime for timing durations.
+  def now: Long = System currentTimeMillis
 
   def timer(key: String, time: Int): Unit = {
     statsdClient map { _.timer(key, time) }
@@ -24,9 +25,9 @@ trait StatsdReporting {
 
   /** Times the duration of the supplied thunk */
   def timed[T](key: String)(operation: => T): T = {
-    val start = now
+    val start = System.nanoTime
     val result = operation
-    val duration = (now - start) / 1000000L
+    val duration = (System.nanoTime - start) / 1000000L
 
     timer(key, duration.toInt)
 
