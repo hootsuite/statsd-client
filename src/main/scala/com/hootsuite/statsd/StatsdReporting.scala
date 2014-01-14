@@ -11,17 +11,17 @@ trait StatsdReporting {
   // Prefer System.nanoTime for timing durations.
   def now: Long = System currentTimeMillis
 
-  def timer(key: String, time: Int): Unit = {
-    statsdClient map { _.timer(key, time) }
-  }
+  /** Set the given timer, if a statsd client is defined */
+  def timer(key: String, time: Int, sampleRate: Double = 1.0): Unit = statsdClient map { _.timer(key, time, sampleRate) }
 
   /** Increment the given counter, if a statsd client is defined */
-  def inc(key: String): Unit =
-    statsdClient map { _ inc key }
+  def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = statsdClient map { _.inc(key, magnitude, sampleRate) }
+
+  /** Decrement the given counter, if a statsd client is defined */
+  def dec(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = statsdClient map { _.dec(key, magnitude, sampleRate) }
 
   /** Set the given gauge, if a statsd client is defined */
-  def gauge(key: String, amt: Int): Unit =
-    statsdClient map { _.gauge(key, amt) }
+  def gauge(key: String, amt: Int, sampleRate: Double = 1.0): Unit = statsdClient map { _.gauge(key, amt, sampleRate) }
 
   /** Times the duration of the supplied thunk */
   def timed[T](key: String)(operation: => T): T = {

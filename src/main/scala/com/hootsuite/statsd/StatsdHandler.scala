@@ -2,14 +2,8 @@ package com.hootsuite.statsd
 
 import com.typesafe.config.Config
 
-import etsy.StatsdClient
-
 /**
- * Basic handler that will send all messages to statsd.
- *
- * @param statsdHost the statsd hostname
- * @param statsdPort the UDP port to connect to on statsdHost
- * @param prefix the base prefix string for all statsd events.
+ * Basic handler that will send all messages to statsd. Wrapper for the Java StatdsClient from Etsy.
  */
 class StatsdHandler(config: Config) {
   private val host = config.getString("statsd.host")
@@ -22,10 +16,34 @@ class StatsdHandler(config: Config) {
     s"$pfx.$hpfx.".replaceAll("\\.{1,}", ".")
   }
 
-  def inc(k: String, v: Int = 1): Unit = client.increment(s"${prefix}${k}", v)
-  def dec(k: String, v: Int = 1): Unit = client.decrement(s"${prefix}${k}", v)
-  def gauge(k: String, v: Int): Unit = client.gauge(s"${prefix}${k}", v)
-  def timer(k: String, v: Int): Unit = client.timing(s"${prefix}${k}", v)
+  /**
+   * Increment a counter
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server sampleRate% of the time.
+   */
+  def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = client.increment(s"${prefix}${key}", magnitude, sampleRate)
+
+  /**
+   * Decrement a counter
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server sampleRate% of the time.
+   */
+  def dec(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = client.decrement(s"${prefix}${key}", magnitude, sampleRate)
+
+  /**
+   * Set a gauge value
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server sampleRate% of the time.
+   */
+  def gauge(key: String, magnitude: Int, sampleRate: Double = 1.0): Unit = client.gauge(s"${prefix}${key}", magnitude.toDouble, sampleRate)
+
+  /**
+   * Set a timing value
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server sampleRate% of the time.
+   */
+  def timer(key: String, value: Int, sampleRate: Double = 1.0): Unit = client.timing(s"${prefix}${key}", value, sampleRate)
+
 
   override def toString =
     "StatsdHandler(StatsdClient(%s, %s), %s)" format(host, port, prefix)
