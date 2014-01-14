@@ -9,3 +9,4 @@ target
 .project
 ScalaStatsd.iml
 project/ScalaStatsd-build.iml
+.idea
