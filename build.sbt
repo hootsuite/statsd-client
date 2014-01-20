@@ -1,6 +1,6 @@
 name := "ScalaStatsd"
 
-version := "1.1"
+version := "1.2"
 
 organization := "com.hootsuite"
 
@@ -13,5 +13,6 @@ resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases"
 resolvers += "Sonatype" at "https://oss.sonatype.org/content/repositories/releases/"
 
 libraryDependencies ++= Seq(
-  "com.typesafe.akka" %% "akka-actor" % "2.1.0"
+  // tumbleweed...
 )
+
