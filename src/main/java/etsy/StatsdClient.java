@@ -1,4 +1,5 @@
 package etsy;
+
 /**
  * StatsdClient.java
  *
@@ -27,6 +28,8 @@ package etsy;
  * create a wrapper class which creates a static client and proxies to it.
  *
  * You know... the "Java way."
+ *
+ * From https://github.com/etsy/statsd/tree/master/examples
  */
 
 import java.io.IOException;
@@ -38,24 +41,20 @@ import java.nio.channels.DatagramChannel;
 import java.util.Locale;
 import java.util.Random;
 
-//import org.apache.log4j.Logger;
 
 public class StatsdClient {
 	private static final Random RNG = new Random();
-	private final akka.event.LoggingAdapter log;
 
 	private final InetSocketAddress _address;
 	private final DatagramChannel _channel;
 
-	public StatsdClient(String host, int port, akka.event.LoggingAdapter log) throws UnknownHostException, IOException {
-		this(InetAddress.getByName(host), port, log);
-		//this.log = log;
+	public StatsdClient(String host, int port) throws UnknownHostException, IOException {
+		this(InetAddress.getByName(host), port);
 	}
 
-	public StatsdClient(InetAddress host, int port, akka.event.LoggingAdapter log) throws IOException {
+	public StatsdClient(InetAddress host, int port) throws IOException {
 		_address = new InetSocketAddress(host, port);
 		_channel = DatagramChannel.open();
-		this.log = log;
 	}
 
 	public boolean timing(String key, int value) {
@@ -155,8 +154,7 @@ public class StatsdClient {
 			if (data.length == nbSentBytes) {
 				return true;
 			} else {
-				//log.error
-				System.out.println(String.format(
+				System.err.println(String.format(
 						"Could not send entirely stat %s to host %s:%d. Only sent %d bytes out of %d bytes", stat,
 						_address.getHostName(), _address.getPort(), nbSentBytes, data.length));
 				return false;
