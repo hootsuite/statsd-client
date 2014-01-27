@@ -13,6 +13,6 @@ resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases"
 resolvers += "Sonatype" at "https://oss.sonatype.org/content/repositories/releases/"
 
 libraryDependencies ++= Seq(
-  // tumbleweed...
+  "com.typesafe" % "config" % "1.2.0"
 )
 
