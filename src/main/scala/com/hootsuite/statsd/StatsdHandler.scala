@@ -8,7 +8,7 @@ import com.typesafe.config.Config
 class StatsdHandler(config: Config) {
   private val host = config.getString("statsd.host")
   private val port = config.getInt("statsd.port")
-  private val client = new etsy.StatsdClient(host, port, null)
+  private val client = new etsy.StatsdClient(host, port)
 
   private val prefix = {
     val hpfx = config.getString("statsd.hostpfx").takeWhile(_ != '.').mkString

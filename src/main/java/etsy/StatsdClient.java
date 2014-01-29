@@ -162,9 +162,8 @@ public class StatsdClient {
 
 		} catch (IOException e) {
 			e.printStackTrace();
-			//log.error(e, 
-			//		String.format("Could not send stat %s to host %s:%d", stat, _address.getHostName(),
-			//				_address.getPort()));
+      System.err.println(String.format(
+              "Could not send stat %s to host %s:%d", stat, _address.getHostName(),_address.getPort()));
 			return false;
 		}
 	}
