@@ -49,12 +49,12 @@ trait StatsdReporting {
   /**
    * Times the duration of the supplied thunk
    */
-  def timed[T](key: String)(operation: => T): T = {
+  def timed[T](key: String, sampleRate: Double = 1.0)(operation: => T): T = {
     val start = System.nanoTime
     val result = operation
     val duration = (System.nanoTime - start) / 1000000L
 
-    timer(key, duration.toInt)
+    timer(key, duration.toInt, sampleRate)
 
     result
   }
