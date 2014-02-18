@@ -1,35 +1,59 @@
 package com.hootsuite.statsd
 
+
 /**
- * Wrapper class for statsdClient to easily allow applications to
- * time operations and do nothing when no statsdClient is defined.
+ * Add this trait and define a StatsdClient implementation to add statsd reporting. Use NoopStatsdClient
+ * when stats aren't needed.
  */
 trait StatsdReporting {
 
-  protected val statsdClient: Option[StatsdHandler]
+  protected val statsdClient: StatsdClient
 
-  // Prefer System.nanoTime for timing durations.
-  def now: Long = System currentTimeMillis
+  /**
+   * Increment a counter
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server
+   *                   sampleRate% of the time.
+   */
+  def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit =
+    statsdClient.inc(key, magnitude, sampleRate)
 
-  /** Set the given timer, if a statsd client is defined */
-  def timer(key: String, time: Int, sampleRate: Double = 1.0): Unit = statsdClient map { _.timer(key, time, sampleRate) }
+  /**
+   * Decrement a counter
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server
+   *                   sampleRate% of the time.
+   */
+  def dec(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit =
+    statsdClient.dec(key, magnitude, sampleRate)
 
-  /** Increment the given counter, if a statsd client is defined */
-  def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = statsdClient map { _.inc(key, magnitude, sampleRate) }
+  /**
+   * Set a gauge value
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server
+   *                   sampleRate% of the time.
+   */
+  def gauge(key: String, amt: Double, sampleRate: Double = 1.0): Unit =
+    statsdClient.gauge(key, amt, sampleRate)
 
-  /** Decrement the given counter, if a statsd client is defined */
-  def dec(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit = statsdClient map { _.dec(key, magnitude, sampleRate) }
+  /**
+   * Set a timing value
+   *
+   * @param sampleRate between 0.0 and 1.0. The client will only send to the server
+   *                   sampleRate% of the time.
+   */
+  def timer(key: String, time: Int, sampleRate: Double = 1.0): Unit =
+    statsdClient.timer(key, time, sampleRate)
 
-  /** Set the given gauge, if a statsd client is defined */
-  def gauge(key: String, amt: Int, sampleRate: Double = 1.0): Unit = statsdClient map { _.gauge(key, amt, sampleRate) }
-
-  /** Times the duration of the supplied thunk */
-  def timed[T](key: String)(operation: => T): T = {
+  /**
+   * Times the duration of the supplied thunk
+   */
+  def timed[T](key: String, sampleRate: Double = 1.0)(operation: => T): T = {
     val start = System.nanoTime
     val result = operation
     val duration = (System.nanoTime - start) / 1000000L
 
-    timer(key, duration.toInt)
+    timer(key, duration.toInt, sampleRate)
 
     result
   }

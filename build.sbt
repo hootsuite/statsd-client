@@ -1,6 +1,6 @@
 name := "ScalaStatsd"
 
-version := "1.2"
+version := "1.3"
 
 organization := "com.hootsuite"
 
@@ -13,6 +13,7 @@ resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases"
 resolvers += "Sonatype" at "https://oss.sonatype.org/content/repositories/releases/"
 
 libraryDependencies ++= Seq(
-  "com.typesafe" % "config" % "1.2.0"
+  "com.typesafe"  %  "config"    % "1.2.0",
+  "org.scalatest" %% "scalatest" % "2.0"    % "test"
 )
 
