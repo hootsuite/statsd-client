@@ -2,6 +2,8 @@ name := "ScalaStatsd"
 
 version := "1.3"
 
+crossPaths := false
+
 organization := "com.hootsuite"
 
 scalaVersion := "2.10.3"
