@@ -2,13 +2,12 @@ package com.hootsuite.statsd
 
 
 /**
- * Wrapper class for statsdClient to easily allow applications to time operations and do nothing
- * when no statsdClient is defined.
+ * Add this trait and define a StatsdClient implementation to add statsd reporting. Use NoopStatsdClient
+ * when stats aren't needed.
  */
 trait StatsdReporting {
 
   protected val statsdClient: StatsdClient
-
 
   /**
    * Increment a counter

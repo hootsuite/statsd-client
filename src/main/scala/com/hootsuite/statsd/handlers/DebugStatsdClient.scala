@@ -1,8 +1,8 @@
 package com.hootsuite.statsd.handlers
 
-import collection.JavaConverters._
 import scala.util.Random
 import com.hootsuite.statsd.StatsdClient
+import scala.collection.concurrent.TrieMap
 
 
 /**
@@ -10,8 +10,8 @@ import com.hootsuite.statsd.StatsdClient
  */
 class DebugStatsdClient extends StatsdClient {
 
-  val stats = new java.util.concurrent.ConcurrentHashMap[String, Int]().asScala
-  val gaugeStats = new java.util.concurrent.ConcurrentHashMap[String, Double]().asScala
+  val stats = new TrieMap[String, Int]
+  val gaugeStats = new TrieMap[String, Double]
 
 
   override def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit =
