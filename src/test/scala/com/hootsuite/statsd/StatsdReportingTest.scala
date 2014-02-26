@@ -67,4 +67,25 @@ class StatsdReportingTest extends FlatSpec with Matchers with StatsdReporting {
 
     queryStats.get("test.counter3").value should be < 10
   }
+
+  "Slicing" should "convert timestamps to labelled differences" in {
+    val stamps = Seq("in" -> 1000000000L, "start" -> 1000001000L,
+                     "finish" -> 1000003000L, "out" -> 1000003500L)
+
+    val expected = Seq("inToStart" -> 1000, "startToFinish" -> 2000, "finishToOut" -> 500)
+
+    expected should equal(StatsdReporting slices stamps)
+  }
+
+  it should "ignore negative slices" in {
+    // this is how you can encode multiple series
+    val stamps = Seq("in" -> 1000000000L, "start" -> 1000001000L,
+                     "finish" -> 1000003000L, "out" -> 1000003500L,
+                     "in" -> 1000000000L, "out" -> 1000003500L)
+
+    val expected = Seq("inToStart" -> 1000, "startToFinish" -> 2000, "finishToOut" -> 500, "inToOut" -> 3500)
+
+    expected should equal(StatsdReporting slices stamps)
+
+  }
 }

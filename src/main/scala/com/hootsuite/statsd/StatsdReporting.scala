@@ -15,12 +15,23 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
+object StatsdReporting {
+  def slices(timestamps: Seq[(String, Long)]): Seq[(String, Int)] =
+    (timestamps zip timestamps.tail) collect {
+      case ((n1, t1), (n2, t2)) if t2 > t1=>
+        val diff = (t2 - t1).toInt
+        val slice = s"${n1}To${n2.capitalize}"
+
+        slice -> diff
+    }
+}
 
 /**
  * Add this trait and define a StatsdClient implementation to add statsd reporting. Use NoopStatsdClient
  * when stats aren't needed.
  */
 trait StatsdReporting {
+  import StatsdReporting._
 
   protected val statsdClient: StatsdClient
 
@@ -87,4 +98,11 @@ trait StatsdReporting {
     (result, duration)
   }
 
+  /** Takes labelled timestamps and graphs the gaps between them. */
+  def timeSlices(key: String => String, timestamps: Seq[(String, Long)]): Unit =
+    slices(timestamps) foreach {
+      case (slice, diff) =>
+        val stat = key(slice)
+        timer(stat, diff)
+    }
 }
