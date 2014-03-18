@@ -46,10 +46,10 @@ class StatsdReportingTest extends FlatSpec with Matchers with StatsdReporting {
   }
 
   it should "only update a certain percentage of times when using sampleRate" in {
-    (1 to 20).foreach { _ =>
+    (1 to 10).foreach { _ =>
       inc("test.counter3", 1, 0.1)
     }
 
-    queryStats.get("test.counter3").value should be < 8
+    queryStats.get("test.counter3").value should be < 10
   }
 }
