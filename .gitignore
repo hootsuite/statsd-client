@@ -1,0 +1,12 @@
+.ensime
+.ensime_lucene
+project/target
+project/project
+target
+*~
+.cache
+.classpath
+.project
+ScalaStatsd.iml
+project/ScalaStatsd-build.iml
+.idea
