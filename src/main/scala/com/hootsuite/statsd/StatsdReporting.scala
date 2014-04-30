@@ -58,4 +58,18 @@ trait StatsdReporting {
     result
   }
 
+  /**
+   * Times the duration of the supplied function.
+   * It returns a tuple of (result, duration)
+   */
+  def timeAndResult[T](key: String, sampleRate: Double = 1.0)(operation: => T): (T, Long) = {
+    val start = System.nanoTime
+    val result = operation
+    val duration = (System.nanoTime - start) / 1000000L
+
+    timer(key, duration.toInt, sampleRate)
+
+    (result, duration)
+  }
+
 }
