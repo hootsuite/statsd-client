@@ -15,17 +15,12 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
-/**
- * See the StatsdReporting trait for API documentation
- */
-trait StatsdClient {
+class Timer {
+  private val start = System.nanoTime
 
-  def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit
-
-  def dec(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit
-
-  def gauge(key: String, magnitude: Double, sampleRate: Double = 1.0): Unit
-
-  def timer(key: String, value: Int, sampleRate: Double = 1.0): Unit
-
+  /**
+   * @return milliseconds elapsed (truncated)
+   */
+  def stop: Long =
+    (System.nanoTime - start) / 1000000L
 }
