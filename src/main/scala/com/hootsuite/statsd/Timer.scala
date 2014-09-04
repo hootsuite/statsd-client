@@ -23,10 +23,4 @@ class Timer {
    */
   def stop: Long =
     (System.nanoTime - start) / 1000000L
-
-  /**
-   * @return milliseconds elapsed (truncated)
-   */
-  def msElapsed: Double =
-    (System.nanoTime - start).toDouble / 1000000.0
 }
