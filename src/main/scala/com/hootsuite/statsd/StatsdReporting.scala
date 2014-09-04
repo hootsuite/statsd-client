@@ -75,9 +75,9 @@ trait StatsdReporting {
    * Times the duration of the supplied thunk
    */
   def timed[T](key: String, sampleRate: Double = 1.0)(operation: => T): T = {
-    val start = System.nanoTime
+    val timr = new Timer
     val result = operation
-    val duration = (System.nanoTime - start) / 1000000L
+    val duration = timr.stop
 
     timer(key, duration.toInt, sampleRate)
 
@@ -89,9 +89,9 @@ trait StatsdReporting {
    * It returns a tuple of (result, duration)
    */
   def timeAndResult[T](key: String, sampleRate: Double = 1.0)(operation: => T): (T, Long) = {
-    val start = System.nanoTime
+    val timr = new Timer
     val result = operation
-    val duration = (System.nanoTime - start) / 1000000L
+    val duration = timr.stop
 
     timer(key, duration.toInt, sampleRate)
 
