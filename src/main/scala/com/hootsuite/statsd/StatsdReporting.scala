@@ -15,7 +15,7 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
-import scala.concurrent.Future
+import scala.concurrent.{Future, ExecutionContext}
 
 object StatsdReporting {
   def slices(timestamps: Seq[(String, Long)]): Seq[(String, Int)] =
