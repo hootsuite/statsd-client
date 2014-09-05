@@ -15,6 +15,8 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
+import scala.concurrent.{Future, ExecutionContext}
+
 object StatsdReporting {
   def slices(timestamps: Seq[(String, Long)]): Seq[(String, Int)] =
     (timestamps zip timestamps.tail) collect {
@@ -82,6 +84,20 @@ trait StatsdReporting {
     timer(key, duration.toInt, sampleRate)
 
     result
+  }
+
+  /**
+   * Times the duration of the supplied future thunk
+   */
+  def timedFuture[T](key: String, sampleRate: Double = 1.0)
+                    (operation: =>Future[T])
+                    (implicit ec: ExecutionContext): Future[T] = {
+    val timr = new Timer
+    operation map { result =>
+      val duration = timr.stop
+      timer(key, duration.toInt, sampleRate)
+      result
+    }
   }
 
   /**
