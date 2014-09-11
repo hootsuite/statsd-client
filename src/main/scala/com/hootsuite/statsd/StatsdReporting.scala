@@ -93,11 +93,13 @@ trait StatsdReporting {
                     (operation: =>Future[T])
                     (implicit ec: ExecutionContext): Future[T] = {
     val timr = new Timer
-    operation map { result =>
+    val result = operation
+    result.onComplete {_ =>
       val duration = timr.stop
       timer(key, duration.toInt, sampleRate)
-      result
     }
+
+    result
   }
 
   /**
