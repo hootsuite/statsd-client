@@ -1,6 +1,6 @@
 name := "ScalaStatsd"
 
-version := "2.0.4"
+version := "2.0.5-SNAPSHOT"
 
 scalaVersion := "2.11.1"
 
@@ -8,14 +8,11 @@ crossScalaVersions := Seq("2.10.4", "2.11.1")
 
 organization := "com.hootsuite"
 
-publishTo := Some(Resolver.file("HootSuite repo", file("/var/www/maven-development")))
+publishTo := Some("HootSuite Local repo" at "http://maven.hootops.com:8081/artifactory/hootsuite-local")
 
-resolvers += "Typesafe Repo" at "http://repo.typesafe.com/typesafe/releases"
-
-resolvers += "Sonatype" at "https://oss.sonatype.org/content/repositories/releases/"
+credentials += Credentials(Path.userHome / ".ivy2" / ".credentials")
 
 libraryDependencies ++= Seq(
   "com.typesafe"  %  "config"    % "1.2.1",
   "org.scalatest" %% "scalatest" % "2.2.0"    % "test"
 )
-
