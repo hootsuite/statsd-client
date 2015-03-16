@@ -1,6 +1,6 @@
 # Changelog
 
-## 2.1.0
+## 3.0.0
 
 * Require an explicit execution context for UdpStatsdLogger's constructor, 
   for bulkheading calls to the statsd library. Calling the statsd lib from 
