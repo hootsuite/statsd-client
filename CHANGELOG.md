@@ -1,5 +1,9 @@
 # Changelog
 
+## Development
+
+Nothing yet
+
 ## 3.0.0
 
 * Require an explicit execution context for UdpStatsdLogger's constructor, 
