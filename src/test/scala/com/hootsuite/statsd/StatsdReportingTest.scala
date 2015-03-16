@@ -15,14 +15,29 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
-import org.scalatest.{Matchers, FlatSpec}
-import org.scalatest.OptionValues._
 import com.hootsuite.statsd.handlers.DebugStatsdClient
+import org.scalatest.OptionValues._
+import org.scalatest.{FlatSpec, Matchers}
 
-
+import scala.collection.JavaConverters._
+import scala.collection.concurrent.Map
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.atomic.AtomicLong
 
 class StatsdReportingTest extends FlatSpec with Matchers with StatsdReporting {
-  override protected val statsdClient: StatsdClient = new DebugStatsdClient
+
+  private val putCounter = new AtomicLong(0L)
+
+  private val statsCounter = new ConcurrentHashMap[String, Int]() {
+    override def put(key: String, value: Int) = {
+      putCounter.incrementAndGet()
+      super.put(key, value)
+    }
+  }.asScala
+
+  override protected val statsdClient: StatsdClient = new DebugStatsdClient {
+    override val stats: Map[String, Int] = statsCounter
+  }
 
   val queryStats = statsdClient.asInstanceOf[DebugStatsdClient].stats
   val queryStatsGauge = statsdClient.asInstanceOf[DebugStatsdClient].gaugeStats
@@ -61,11 +76,16 @@ class StatsdReportingTest extends FlatSpec with Matchers with StatsdReporting {
   }
 
   it should "only update a certain percentage of times when using sampleRate" in {
-    (1 to 10).foreach { _ =>
-      inc("test.counter3", 1, 0.1)
+    putCounter.set(0L)
+    val sampleRate = 0.1
+    val count = 10000
+
+    (1 to count).foreach { _ =>
+      inc("test.counter3", 1, sampleRate)
     }
 
-    queryStats.get("test.counter3").value should be < 10
+    val delta = math.abs( putCounter.get() - (count * sampleRate).toLong )
+    delta * 1000 / count should be < 10L // less than 0.1% sample deviation
   }
 
   "Slicing" should "convert timestamps to labelled differences" in {
