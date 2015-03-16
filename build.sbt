@@ -1,6 +1,6 @@
 name := "ScalaStatsd"
 
-version := "2.0.5-SNAPSHOT"
+version := "2.1.0"
 
 scalaVersion := "2.11.6"
 
