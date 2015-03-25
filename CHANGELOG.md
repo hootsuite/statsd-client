@@ -6,10 +6,8 @@ Nothing yet
 
 ## 3.0.0
 
-* Require an explicit execution context for UdpStatsdLogger's constructor, 
-  for bulkheading calls to the statsd library. Calling the statsd lib from 
-  the request thread can cause severe performance degradation when statsd 
-  servers are inaccessible (even though the implementation uses NIO).
+* Require an explicit execution context for UdpStatsdLogger's constructor.
+  See UdpStatsdClient's documentation for details.
 
 * Removed hardcoded default host = "graph.hootsuitemedia.com".
 

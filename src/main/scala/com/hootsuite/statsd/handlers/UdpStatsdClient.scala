@@ -23,12 +23,25 @@ import scala.concurrent.{Future, ExecutionContext}
 /**
  * Basic handler that will send all messages to statsd. Wrapper for the Java StatdsClient from Etsy.
  *
+ * This client can and should be configured to make the statsd calls asynchronously, on a separate
+ * thread pool / execution context. See the `ec` param below.
+ *
+ * Even though the underlying client is a NIO implementation and uses UDP, under some circumstances
+ * unavailability of the statsd servers can dramatically affect the calling thread's performance.
+ *
+ * An execution context backed by a thread pool with a single thread should be enough for sending
+ * the stats. As with any bulkheading use a dedicated EC and avoid using a shared one (such as
+ * `scala.concurrent.ExecutionContext.Implicits.global`).
+ *
  * Config parameters:
  *
  * statsd.host - Server host
  * statsd.port - Server port
  * statsd.hostpfx - Local hostname prefix for stats key generation
  * statsd.prefix - Functional prefix for stats key generation
+ *
+ * @param ec Execution context to be used by this client wrapper to invoke the underlying Etsy client;
+ *           if a None/no execution context is supplied the calls will be made on the calling thread.
  */
 class UdpStatsdClient(config: Config, ec: Option[ExecutionContext]) extends StatsdClient {
 
