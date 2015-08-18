@@ -35,7 +35,6 @@ package etsy;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.InetSocketAddress;
-import java.net.UnknownHostException;
 import java.nio.ByteBuffer;
 import java.nio.channels.DatagramChannel;
 import java.util.Locale;
@@ -48,7 +47,7 @@ public class StatsdClient {
 	private final InetSocketAddress _address;
 	private final DatagramChannel _channel;
 
-	public StatsdClient(String host, int port) throws UnknownHostException, IOException {
+	public StatsdClient(String host, int port) throws IOException {
 		this(InetAddress.getByName(host), port);
 	}
 
@@ -74,8 +73,7 @@ public class StatsdClient {
 	}
 
 	public boolean decrement(String key, int magnitude, double sampleRate) {
-		magnitude = magnitude < 0 ? magnitude : -magnitude;
-		return increment(key, magnitude, sampleRate);
+		return increment(key, magnitude < 0 ? magnitude : -magnitude, sampleRate);
 	}
 
 	public boolean decrement(String... keys) {
@@ -83,13 +81,11 @@ public class StatsdClient {
 	}
 
 	public boolean decrement(int magnitude, String... keys) {
-		magnitude = magnitude < 0 ? magnitude : -magnitude;
-		return increment(magnitude, 1.0, keys);
+		return increment(magnitude < 0 ? magnitude : -magnitude, 1.0, keys);
 	}
 
 	public boolean decrement(int magnitude, double sampleRate, String... keys) {
-		magnitude = magnitude < 0 ? magnitude : -magnitude;
-		return increment(magnitude, sampleRate, keys);
+		return increment(magnitude < 0 ? magnitude : -magnitude, sampleRate, keys);
 	}
 
 	public boolean increment(String key) {
