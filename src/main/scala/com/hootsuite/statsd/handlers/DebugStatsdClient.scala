@@ -1,5 +1,5 @@
 // ==========================================================================
-// Copyright 2014 HootSuite Media, Inc.
+// Copyright 2015 HootSuite Media, Inc.
 // --------------------------------------------------------------------------
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this work except in compliance with the License.
@@ -15,19 +15,18 @@
 // ==========================================================================
 package com.hootsuite.statsd.handlers
 
-import scala.util.Random
 import com.hootsuite.statsd.StatsdClient
-import scala.collection.concurrent.TrieMap
 
+import scala.collection.concurrent.TrieMap
+import scala.util.Random
 
 /**
  * A debug client that just stores the stats locally and can be queried later
  */
 class DebugStatsdClient extends StatsdClient {
 
-  val stats = new TrieMap[String, Int]
-  val gaugeStats = new TrieMap[String, Double]
-
+  val stats: scala.collection.concurrent.Map[String, Int] = new TrieMap[String, Int]
+  val gaugeStats: scala.collection.concurrent.Map[String, Double] = new TrieMap[String, Double]
 
   override def inc(key: String, magnitude: Int = 1, sampleRate: Double = 1.0): Unit =
     maybe(sampleRate) {

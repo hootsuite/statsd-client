@@ -1,5 +1,5 @@
 // ==========================================================================
-// Copyright 2014 HootSuite Media, Inc.
+// Copyright 2015 HootSuite Media, Inc.
 // --------------------------------------------------------------------------
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this work except in compliance with the License.
@@ -15,12 +15,25 @@
 // ==========================================================================
 package com.hootsuite.statsd
 
+import scala.concurrent.{Future, ExecutionContext}
+
+object StatsdReporting {
+  def slices(timestamps: Seq[(String, Long)]): Seq[(String, Int)] =
+    (timestamps zip timestamps.tail) collect {
+      case ((n1, t1), (n2, t2)) if t2 > t1=>
+        val diff = (t2 - t1).toInt
+        val slice = s"${n1}To${n2.capitalize}"
+
+        slice -> diff
+    }
+}
 
 /**
  * Add this trait and define a StatsdClient implementation to add statsd reporting. Use NoopStatsdClient
  * when stats aren't needed.
  */
 trait StatsdReporting {
+  import StatsdReporting._
 
   protected val statsdClient: StatsdClient
 
@@ -64,13 +77,50 @@ trait StatsdReporting {
    * Times the duration of the supplied thunk
    */
   def timed[T](key: String, sampleRate: Double = 1.0)(operation: => T): T = {
-    val start = System.nanoTime
+    val timr = new Timer
     val result = operation
-    val duration = (System.nanoTime - start) / 1000000L
+    val duration = timr.stop
 
     timer(key, duration.toInt, sampleRate)
 
     result
   }
 
+  /**
+   * Times the duration of the supplied future thunk
+   */
+  def timedFuture[T](key: String, sampleRate: Double = 1.0)
+                    (operation: =>Future[T])
+                    (implicit ec: ExecutionContext): Future[T] = {
+    val timr = new Timer
+    val result = operation
+    result.onComplete {_ =>
+      val duration = timr.stop
+      timer(key, duration.toInt, sampleRate)
+    }
+
+    result
+  }
+
+  /**
+   * Times the duration of the supplied function.
+   * It returns a tuple of (result, duration)
+   */
+  def timeAndResult[T](key: String, sampleRate: Double = 1.0)(operation: => T): (T, Long) = {
+    val timr = new Timer
+    val result = operation
+    val duration = timr.stop
+
+    timer(key, duration.toInt, sampleRate)
+
+    (result, duration)
+  }
+
+  /** Takes labelled timestamps and graphs the gaps between them. */
+  def timeSlices(key: String => String, timestamps: Seq[(String, Long)]): Unit =
+    slices(timestamps) foreach {
+      case (slice, diff) =>
+        val stat = key(slice)
+        timer(stat, diff)
+    }
 }
